@@ -1,6 +1,7 @@
 import logo from './logo.svg';
 import './App.css';
 import { Component } from 'react';
+import { Button  } from "@/components/ui/button";
 
 class App extends Component {
   constructor(props) {
