@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react"
-import logo from '../assets/logo.svg';
-import { Button  } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
+import { Button  } from "@/components/ui/button";
+import logo from '../assets/logo.svg';
+import { ChevronsRight} from "lucide-react"
 
 const App = () => {
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [data, setData] = useState([]);
+  
   useEffect(() => {
     fetch("/api/projects")
       .then(res => res.json())
@@ -25,7 +27,8 @@ const App = () => {
           }
         }
       )  
-  })
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header" style={{border: "1px solid red"}}>
@@ -41,7 +44,7 @@ const App = () => {
         <p>
           Data size: {data.length}
         </p>
-        <Button onClick={() => navigate("/dashboard")}>Dashboard</Button>
+        <Button size="lg" className="m-4" onClick={() => navigate("/dashboard")}>Dashboard<ChevronsRight className="h-4 w-4" /></Button>
       </header>
     </div>
   );
