@@ -20,7 +20,7 @@ const ProjectDetail = () => {
     <div>
       <h2 className="text-2xl font-bold border-b">{currentProject?.name}</h2>
       <p>Project ID: {projectId}</p>
-     {queryEnergy.data.length ? <EnergyChart data={queryEnergy.data} /> : null}
+     <EnergyChart data={queryEnergy.data} />
     </div>
   );
 };
