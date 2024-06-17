@@ -15,13 +15,13 @@ export const Sidebar = () => {
           <li>
             <a href="/dashboard" className="flex items-center space-x-2">
               <span className="text-lg">🏠</span>
-              <span>Dashboard</span>
+              <span>Tableau de bord</span>
             </a>
           </li>
           <li>
             <a href="/project" className="flex items-center space-x-2">
               <span className="text-lg">📂</span>
-              <span>Projects</span>
+              <span>Projets</span>
             </a>
           </li>
         </ul>
