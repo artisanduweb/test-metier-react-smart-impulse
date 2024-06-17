@@ -15,7 +15,9 @@ export const SidebarLayout = () => {
     <div className="sidebar-layout flex items-start space-between h-screen">
       <Sidebar />
       <main className="grid w-full h-full">
-      <Outlet />
+        <div className="p-8 ">
+          <Outlet />
+        </div> 
       </main>
     </div>
   );
