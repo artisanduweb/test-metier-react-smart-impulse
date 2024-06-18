@@ -5,6 +5,7 @@ import { addDays, startOfWeek, /* startOfMonth, format*/ } from "date-fns"
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const aggregateDataByWeek = (data) => {
   const aggregatedData = {};
@@ -37,12 +38,14 @@ const aggregateDataByWeek = (data) => {
   }));
 };
 
+const EURO_PER_MWH = 83;
+
 export const EnergyChart = ({data}) => {
   const [date, setDate] = useState({
     from: new Date(2024, 5, 20),
     to: addDays(new Date(2024, 5, 20), 20),
   })
-
+  const [YValue, setYValue] = useState('energy')
   const [view, setView] = useState('day')
   // Just a hook to go to a specific date where the data is available
   useEffect(() => {
@@ -53,15 +56,16 @@ export const EnergyChart = ({data}) => {
     }
   }, [data])
 
-  const filterDataByDate = (data, fromDate, toDate) => {
+  const filterDataByDate = useCallback((data, fromDate, toDate) => {
     return data.map(series => ({
       ...series,
       data: series.data.filter(point => {
         const date = new Date(point[0]);
         return date >= fromDate && date <= toDate;
-      }),
+      })
+      .map(point => [point[0], YValue === 'currency' ? point[1] * EURO_PER_MWH : point[1]]), // Convertir les valeurs si nécessaire
     }));
-  };
+  }, [YValue]);
 
   const getOptions = useCallback(() => {
     const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
@@ -118,7 +122,11 @@ export const EnergyChart = ({data}) => {
         type: 'value',
         axisLabel: {
           formatter: function (value) {
-            return `${(value / 1e6).toFixed(2)} MWh`;
+            console.log(YValue);
+            if (YValue === 'energy'){
+              return `${(value / 1e6).toFixed(2)} MwH`;
+            }
+            return `${(value / 1e6).toFixed(2)} €`;
           },
         },
       },
@@ -131,7 +139,7 @@ export const EnergyChart = ({data}) => {
         color: d.color,
       })),
     };
-  }, [data, date, view]);
+  }, [YValue, data, date, filterDataByDate, view]);
 
   return <>
     <ReactEcharts
@@ -142,7 +150,7 @@ export const EnergyChart = ({data}) => {
     <div className="projects grid grid-cols-2 gap-4">
       <Card>
         <CardHeader>
-          <CardTitle>Pick the period</CardTitle>  
+          <CardTitle>Choisir la période</CardTitle>  
         </CardHeader>
         <CardContent>
           <DatePickerWithRange date={date} setDate={setDate}/>
@@ -151,7 +159,7 @@ export const EnergyChart = ({data}) => {
       <Card>
         <CardHeader>
           <CardTitle>
-            View
+            Vue
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -160,7 +168,7 @@ export const EnergyChart = ({data}) => {
               <RadioGroupItem value="day" id="day">Jour</RadioGroupItem><Label htmlFor="r1">Jour</Label>
             </div>
             <div className="flex gap-2">
-              <RadioGroupItem value="week" id="week">Semaine</RadioGroupItem><Label htmlFor="r2">Default</Label>
+              <RadioGroupItem value="week" id="week">Semaine</RadioGroupItem><Label htmlFor="r2">Semaine</Label>
             </div>
             <div className="flex gap-2">
               <RadioGroupItem value="month" id="month">Mois</RadioGroupItem><Label htmlFor="r3">Mois</Label>
@@ -168,7 +176,19 @@ export const EnergyChart = ({data}) => {
           </RadioGroup>
         </CardContent>
       </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>MWh / €</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Tabs defaultValue={YValue} className="w-[400px]" onValueChange={setYValue}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="energy">MWh</TabsTrigger>
+              <TabsTrigger value="currency">€</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </CardContent>
+      </Card>
     </div>
-    {/* TODO: Euro */}
   </>
 }
