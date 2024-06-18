@@ -128,7 +128,7 @@ export const EnergyChart = ({data}) => {
         barWidth: '100%',
         stack: 'total',
         data: d.data && d.data.map(d => [d[0], d[1]]),
-           color: d.color,
+        color: d.color,
       })),
     };
   }, [data, date, view]);
