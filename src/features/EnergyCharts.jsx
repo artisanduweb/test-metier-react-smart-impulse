@@ -55,6 +55,10 @@ export const EnergyChart = ({data}) => {
           type: 'cross',
         },
       },
+      legend: {
+        data: filteredData.map(d => d.label),
+        bottom: 10,
+      },
       xAxis: {
         type: 'time',
         boundaryGap: false,
