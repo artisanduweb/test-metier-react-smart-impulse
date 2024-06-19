@@ -101,13 +101,14 @@ export const EnergyChart = ({data}) => {
       },
       legend: {
         data: filteredData.map(d => d.label),
-        bottom: 10,
+        top: 30,
       },
       xAxis: {
         type: 'time',
         boundaryGap: false,
         axisLabel: {
           formatter: function (value) {
+            if (!isFinite(value)) return '';
             const date = new Date(value);
             if (view === 'week') {
               const weekStart = weekFormatter.format(startOfWeek(date));
@@ -130,6 +131,20 @@ export const EnergyChart = ({data}) => {
           },
         },
       },
+      dataZoom: [
+        {
+          type: 'slider',
+          xAxisIndex: 0,
+          start: 0,
+          end: 100,
+        },
+        {
+          type: 'inside',
+          xAxisIndex: 0,
+          start: 0,
+          end: 100,
+        },
+      ],
       series: aggregatedData.map((d) => ({
         name: d.label,
         type: 'bar',
