@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import logo from "@/assets/logo.svg";
 
 export const Sidebar = () => {
@@ -27,6 +27,5 @@ export const Sidebar = () => {
         </ul>
       </div>
     </div>
-
   );
-}
+};

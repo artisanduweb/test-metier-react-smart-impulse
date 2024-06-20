@@ -1,6 +1,6 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import {Sidebar} from './Sidebar';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { Sidebar } from "./Sidebar";
 
 export const FullscreenLayout = () => {
   return (
@@ -17,8 +17,8 @@ export const SidebarLayout = () => {
       <main className="grid w-full h-full">
         <div className="p-8 ">
           <Outlet />
-        </div> 
+        </div>
       </main>
     </div>
   );
-}
+};

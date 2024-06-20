@@ -1,7 +1,7 @@
-import { EnergyChart } from '@/features/EnergyCharts';
-import { useQueryProjects, useQueryEnergy } from '@/hooks';
-import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { EnergyChart } from "@/features/EnergyCharts";
+import { useQueryProjects, useQueryEnergy } from "@/hooks";
+import React, { useMemo } from "react";
+import { useParams } from "react-router-dom";
 
 const ProjectDetail = () => {
   const { projectId } = useParams();
@@ -9,8 +9,10 @@ const ProjectDetail = () => {
   const queryEnergy = useQueryEnergy(projectId);
 
   const currentProject = useMemo(() => {
-    return projectsList ? projectsList.find((project) => project.uuid === projectId) : []
-  }, [projectId, projectsList])
+    return projectsList
+      ? projectsList.find((project) => project.uuid === projectId)
+      : [];
+  }, [projectId, projectsList]);
 
   if (isLoading || queryEnergy.isLoading) {
     return <div>Loading...</div>;
@@ -20,9 +22,9 @@ const ProjectDetail = () => {
     <div>
       <h2 className="text-2xl font-bold border-b">{currentProject?.name}</h2>
       <p>Project ID: {projectId}</p>
-     <EnergyChart data={queryEnergy.data} />
+      <EnergyChart data={queryEnergy.data} />
     </div>
   );
 };
 
-export {ProjectDetail};
+export { ProjectDetail };
