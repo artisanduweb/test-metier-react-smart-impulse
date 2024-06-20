@@ -2,10 +2,12 @@ import React, {useCallback, useEffect, useState } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import { DatePickerWithRange } from '@/components/custom/date-range-picker';
 import { addDays, startOfWeek, /* startOfMonth, format*/ } from "date-fns"
+import { toZonedTime } from 'date-fns-tz'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Card, CardTitle, CardHeader, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { TimeZoneSelector } from './TimeZoneSelector';
 
 const aggregateDataByWeek = (data) => {
   const aggregatedData = {};
@@ -41,31 +43,36 @@ const aggregateDataByWeek = (data) => {
 const EURO_PER_MWH = 83;
 
 export const EnergyChart = ({data}) => {
+  const [timezone, setTimezone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
   const [date, setDate] = useState({
-    from: new Date(2024, 5, 20),
-    to: addDays(new Date(2024, 5, 20), 20),
+    from: toZonedTime(new Date(2024, 5, 20), timezone),
+    to: addDays(toZonedTime(new Date(2024, 5, 20), timezone), 20),
   })
   const [YValue, setYValue] = useState('energy')
   const [view, setView] = useState('day')
+  const onTimezoneChange = (timezone) => {
+    setTimezone(timezone);
+  }
+
   // Just a hook to go to a specific date where the data is available
   useEffect(() => {
     if (data.length) {
       const maxDate = new Date(Math.max(...data.map(series => series.data[series.data.length - 1][0])))
       const minDate = addDays(maxDate, -15)
-      setDate({ from: minDate, to: maxDate });
+      setDate({ from: toZonedTime(minDate, timezone), to: toZonedTime(maxDate, timezone) });
     }
-  }, [data])
+  }, [data, timezone])
 
   const filterDataByDate = useCallback((data, fromDate, toDate) => {
     return data.map(series => ({
       ...series,
       data: series.data.filter(point => {
-        const date = new Date(point[0]);
+        const date = toZonedTime(point[0], timezone);
         return date >= fromDate && date <= toDate;
       })
       .map(point => [point[0], YValue === 'currency' ? point[1] * EURO_PER_MWH : point[1]]), // Convertir les valeurs si nécessaire
     }));
-  }, [YValue]);
+  }, [YValue, timezone]);
 
   const getOptions = useCallback(() => {
     const dateFormatter = new Intl.DateTimeFormat('fr-FR', {
@@ -109,7 +116,7 @@ export const EnergyChart = ({data}) => {
         axisLabel: {
           formatter: function (value) {
             if (!isFinite(value)) return '';
-            const date = new Date(value);
+            const date = toZonedTime(value, timezone);
             if (view === 'week') {
               const weekStart = weekFormatter.format(startOfWeek(date));
               const weekEnd = weekFormatter.format(addDays(date, 6));
@@ -202,6 +209,14 @@ export const EnergyChart = ({data}) => {
               <TabsTrigger value="currency">€</TabsTrigger>
             </TabsList>
           </Tabs>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Timezone</CardTitle>
+        </CardHeader>
+        <CardContent>
+         <TimeZoneSelector onTimezoneChange={onTimezoneChange} />
         </CardContent>
       </Card>
     </div>
